@@ -10,8 +10,8 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-from qcampbot.config import repo
-from qcampbot.join_request import get_join_requests
+from termcolor import colored
 
-for join_request in get_join_requests(repo):
-    join_request.do()
+
+def highlight(text):
+    return colored(text, attrs=['bold'])
