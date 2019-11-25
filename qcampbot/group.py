@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-from qcampbot.config import repo, team_limit
+from .config import repo, team_limit
 
 
 class Group:

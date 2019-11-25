@@ -10,8 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-from qcampbot.config import repo
-from qcampbot.join_request import get_join_requests
+from qcampbot import repo, get_join_requests
 
 for join_request in get_join_requests(repo):
     join_request.do()

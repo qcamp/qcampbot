@@ -11,17 +11,4 @@
 # that they have been altered from the originals.
 
 from .config import repo
-from .group import Group
-
-
-class Participant:
-    def __init__(self, handler=None):
-        self.handler = handler
-        self._groups = None
-
-    @property
-    def groups(self):
-        if self._groups is None:
-            self._groups = [Group(issue=issue) for issue in repo.get_issues(state='open',
-                                                                            assignee=self.handler)]
-        return self._groups
+from .join_request import get_join_requests

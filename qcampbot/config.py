@@ -11,7 +11,6 @@
 # that they have been altered from the originals.
 
 from github import Github
-from termcolor import colored
 import yaml
 
 with open('config.yaml') as file:
