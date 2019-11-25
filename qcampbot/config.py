@@ -24,10 +24,6 @@ user = gh.get_user()
 team_limit = config['team limit']
 
 
-def somebody_mentions_me(comment):
-    return user.login in comment.body
-
-
 class Participant:
     def __init__(self, handler=None):
         self.handler = handler
@@ -163,6 +159,10 @@ class JoinRequest:
             self.group.issue.create_comment(comment)
         print(self.reactions[reaction], end=' - ')
         print(to_print)
+
+
+def somebody_mentions_me(comment):
+    return user.login in comment.body
 
 
 def get_join_requests(repo):
