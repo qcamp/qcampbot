@@ -1,4 +1,5 @@
 from github import Github
+from termcolor import colored
 import yaml
 
 with open('config.yaml') as file:
@@ -8,6 +9,7 @@ gh = Github(config['token'])
 
 repo = gh.get_repo("%s/%s" % (config['org'], config['repo']))
 user = gh.get_user()
+team_limit = config['team limit']
 
 
 def somebody_mentions_me(comment):
@@ -44,8 +46,24 @@ class Group:
         self._issue = None
 
     @property
-    def allow_participants(self):
-        return self.issue.state != 'open' or len(self.issue.assignees) < 5
+    def full(self):
+        if len(self.issue.assignees) >= team_limit:
+            self.mark_as_full()
+            return True
+        else:
+            self.mark_as_not_full()
+            return False
+
+    def mark_as_full(self):
+        self.issue.add_to_labels('group is full')
+
+    def mark_as_not_full(self):
+        if 'group is full' in [i.name for i in self.issue.labels]:
+            self.issue.remove_from_labels('group is full')
+
+    @property
+    def closed(self):
+        return self.issue.state != 'open'
 
     @property
     def issue(self):
@@ -60,15 +78,25 @@ class Group:
         return self._number
 
 
+def highlight(text):
+    return colored(text, attrs=['bold'])
+
+
 class JoinRequest:
+    reactions = {'+1': u'👍',
+                 '-1': u'👎',
+                 'confused': u'😕'}
+
     def __init__(self, git_comment):
         self.group = Group(number=int(git_comment.issue_url.rsplit('/', 1)[-1]))
         self.participant = Participant(handler=git_comment.user.login)
-        self._issue = None
         self._git_comment = git_comment
 
     def do(self):
-        if not self.group.allow_participants:
+        if self.group.closed:
+            self.report_group_closed()
+            return
+        if self.group.full:
             self.report_group_full()
             return
         if self.participant.groups is not None:
@@ -78,21 +106,58 @@ class JoinRequest:
         self.report_participant_added()
 
     def report_participant_added(self):
-        self._git_comment.create_reaction('+1')
-        print('User @%s added to #%s' % (self.participant.handler, self.group.number))
+        handler = highlight('@%s' % self.participant.handler)
+        want_to = highlight('#%s' % self.group.number)
+        stdout = f'User {handler} added to {want_to}.'
+        self.report('+1', stdout)
 
     def report_participant_in_other_group(self):
-        self._git_comment.create_reaction('confused')
-        print('User @%s is already in #%s so they cannot be added to #%s' % (
-            self.participant.handler, self.participant.groups[0].number, self.group.number))
+        current = highlight('#%s' % self.participant.groups[0].number)
+        want_to = highlight('#%s' % self.group.number)
+        handler = highlight('@%s' % self.participant.handler)
+        comment = None
+        if current == self.group.number:
+            stdout = (f'User {self.participant.handler} is already in {self.group.number}.'
+                      f'so nothing to do')
+        else:
+            stdout = (f'User {handler} is already in {current} so they cannot '
+                      f'be added to {want_to}')
+            current = self.participant.groups[0].number
+            comment = (
+                f'Hi @{self.participant.handler}! I could not add you to this group because you '
+                f'are already in #{current}. If you want to change teams, unassign yourself from '
+                f'#{current} and write me again here.')
+        self.report('confused', stdout, comment)
 
     def report_group_full(self):
-        self._git_comment.create_reaction('-1')
-        print('User @%s could not be added to #%s (group full)' % (self.participant.handler,
-                                                                  self.group.number))
+        handler = highlight('@%s' % self.participant.handler)
+        group = highlight('#%s' % self.group.number)
+        stdout = f'User {handler} could not be added to {group} (group full).'
+        comment = (f'Hi @{self.participant.handler}! I could not add you to this group '
+                   f'because it is full.')
+        self.report('-1', stdout, comment)
+
+    def report_group_closed(self):
+        handler = highlight('@%s' % self.participant.handler)
+        group = highlight('#%s' % self.group.number)
+        stdout = f'User {handler} could not be added to {group} (group closed).'
+        comment = (f'Hi @{self.participant.handler}! I could not add you to this group '
+                   f'because it is closed.')
+        self.report('-1', stdout, comment)
+
+    def report(self, reaction, to_print, comment=None):
+        self._git_comment.create_reaction(reaction)
+        if comment:
+            self.group.issue.create_comment(comment)
+        print(self.reactions[reaction], end=' - ')
+        print(to_print)
 
 
-for comment in repo.get_issues_comments():
-    if somebody_mentions_me(comment):
-        join_request = JoinRequest(comment)
-        join_request.do()
+def get_join_requests(repo):
+    for comment in repo.get_issues_comments():
+        if somebody_mentions_me(comment):
+            yield JoinRequest(comment)
+
+
+for join_request in get_join_requests(repo):
+    join_request.do()
