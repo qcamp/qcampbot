@@ -13,7 +13,7 @@ team_limit = config['team limit']
 
 
 def somebody_mentions_me(comment):
-    return '@qcamp' in comment.body
+    return user.login in comment.body
 
 
 class Participant:
