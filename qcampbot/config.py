@@ -169,7 +169,3 @@ def get_join_requests(repo):
     for comment in repo.get_issues_comments():
         if somebody_mentions_me(comment):
             yield JoinRequest(comment)
-
-
-for join_request in get_join_requests(repo):
-    join_request.do()
