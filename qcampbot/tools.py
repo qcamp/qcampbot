@@ -10,8 +10,14 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
+import time
 from termcolor import colored
 
 
 def highlight(text):
     return colored(text, attrs=['bold'])
+
+
+def print_log(to_print, icon=None):
+    print(f'[ {time.strftime("%H:%M:%S", time.localtime())} ]', icon, end=' - ')
+    print(to_print)

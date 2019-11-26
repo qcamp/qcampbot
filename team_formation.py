@@ -12,5 +12,7 @@
 
 from qcampbot import repo, get_join_requests
 
-for join_request in get_join_requests(repo):
-    join_request.do()
+while True:
+    for join_request in get_join_requests(repo):
+        join_request.do()
+    print('-' * 20)

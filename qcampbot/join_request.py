@@ -13,7 +13,7 @@
 from .config import user
 from .participant import Participant
 from .group import Group
-from .tools import highlight
+from .tools import highlight, print_log
 
 
 class JoinRequest:
@@ -83,15 +83,18 @@ class JoinRequest:
         self._git_comment.create_reaction(reaction)
         if comment:
             self.group.issue.create_comment(comment)
-        print(self.reactions[reaction], end=' - ')
-        print(to_print)
+        print_log(to_print, self.reactions[reaction])
 
 
 def somebody_mentions_me(comment):
-    return user.login in comment.body
+    return ("@%s" % user.login) in comment.body
+
+
+def still_pending(comment):
+    return user.login not in [ i.user.login for i in comment.get_reactions()]
 
 
 def get_join_requests(repo):
     for comment in repo.get_issues_comments():
-        if somebody_mentions_me(comment):
+        if somebody_mentions_me(comment) and still_pending(comment):
             yield JoinRequest(comment)
