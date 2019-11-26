@@ -11,6 +11,7 @@
 # that they have been altered from the originals.
 
 from .config import repo, team_limit
+from .tools import print_log
 
 
 class Group:
@@ -31,19 +32,17 @@ class Group:
 
     @property
     def full(self):
-        if len(self.issue.assignees) >= team_limit:
-            self.mark_as_full()
-            return True
-        else:
-            self.mark_as_not_full()
-            return False
+        return len(self.issue.assignees) >= team_limit
 
     def mark_as_full(self):
-        self.issue.add_to_labels('group is full')
+        if 'group is full' not in [i.name for i in self.issue.labels]:
+            self.issue.add_to_labels('group is full')
+            print_log(f'Label "full" added to the group {self.number}.', icon=u'🏷')
 
     def mark_as_not_full(self):
         if 'group is full' in [i.name for i in self.issue.labels]:
             self.issue.remove_from_labels('group is full')
+            print_log(f'Label "full" removed to the group {self.number}.', icon=u'🏷')
 
     @property
     def closed(self):
@@ -60,3 +59,13 @@ class Group:
         if self._number is None:
             self._number = self.issue.number
         return self._number
+
+    def update_full_tag(self):
+        if self.full:
+            self.mark_as_full()
+        else:
+            self.mark_as_not_full()
+
+
+def get_groups(repo):
+    return [Group(issue=issue) for issue in repo.get_issues(state='open')]

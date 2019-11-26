@@ -11,8 +11,13 @@
 # that they have been altered from the originals.
 
 from qcampbot import repo, get_join_requests
+from qcampbot import get_groups
 
-while True:
-    for join_request in get_join_requests(repo):
-        join_request.do()
-    print('-' * 20)
+try:
+    while True:
+        for group in get_groups(repo):
+            group.update_full_tag()
+        for join_request in get_join_requests(repo):
+            join_request.do()
+except KeyboardInterrupt:
+    pass
