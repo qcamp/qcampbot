@@ -33,7 +33,7 @@ class JoinRequest:
         if self.group.full:
             self.report_group_full()
             return
-        if self.participant.groups is not None:
+        if len(self.participant.groups):
             self.report_participant_in_other_group()
             return
         self.group.add_participant(self.participant)
