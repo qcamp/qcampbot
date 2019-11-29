@@ -13,11 +13,12 @@
 from .config import repo, team_limit
 from .tools import print_log
 
-
 class Group:
     def __init__(self, issue=None, number=None):
         self._number = None
         self._issue = None
+        self._participants = []
+        self._coaches = []
         if issue:
             # github.Issue
             self._number = issue.number
@@ -32,7 +33,7 @@ class Group:
 
     @property
     def full(self):
-        return len(self.issue.assignees) >= team_limit
+        return len(self.participants) >= team_limit
 
     def mark_as_full(self):
         if 'group is full' not in [i.name for i in self.issue.labels]:
@@ -47,6 +48,26 @@ class Group:
     @property
     def closed(self):
         return self.issue.state != 'open'
+
+    @property
+    def participants(self):
+        if not len(self._participants):
+            from .participant import Participant
+            for assignee in self.issue.assignees:
+                participant = Participant(named_user=assignee)
+                if not participant.is_coach:
+                    self._participants.append(participant)
+        return self._participants
+
+    @property
+    def coaches(self):
+        if not len(self._coaches):
+            from .participant import Participant
+            for assignee in self.issue.assignees:
+                participant = Participant(named_user=assignee)
+                if participant.is_coach:
+                    self._coaches.append(participant)
+        return self._coaches
 
     @property
     def issue(self):

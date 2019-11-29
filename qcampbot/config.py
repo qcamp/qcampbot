@@ -19,5 +19,7 @@ with open('config.yaml') as file:
 gh = Github(config['token'])
 
 repo = gh.get_repo("%s/%s" % (config['org'], config['repo']))
+organization = gh.get_organization(config['org'])
+coaches_team = organization.get_team_by_slug(config['coaches team'])
 user = gh.get_user()
 team_limit = config['team limit']
