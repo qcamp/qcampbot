@@ -17,9 +17,9 @@ from .tools import highlight, print_log
 
 
 class JoinRequest:
-    reactions = {'+1': u'👍',
-                 '-1': u'👎',
-                 'confused': u'😕'}
+    reactions = {'+1': '\N{THUMBS UP SIGN}',
+                 '-1': '\N{THUMBS DOWN SIGN}',
+                 'confused': '\N{CONFUSED FACE}'}
 
     def __init__(self, git_comment):
         self.group = Group(number=int(git_comment.issue_url.rsplit('/', 1)[-1]))
@@ -83,7 +83,7 @@ class JoinRequest:
         self._git_comment.create_reaction(reaction)
         if comment:
             self.group.issue.create_comment(comment)
-        print_log(to_print, self.reactions[reaction])
+        print_log(to_print, icon=self.reactions[reaction])
 
 
 def somebody_mentions_me(comment):

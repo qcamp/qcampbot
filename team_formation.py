@@ -10,14 +10,16 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-from qcampbot import repo, get_join_requests
-from qcampbot import get_groups
+from qcampbot import repo, get_join_requests, get_groups, check_rate_limit
+
+remaining, reset = check_rate_limit()
 
 try:
     while True:
-        for group in get_groups(repo):
+        for group in get_groups(repo).values():
             group.update_full_tag()
         for join_request in get_join_requests(repo):
             join_request.do()
+        remaining, reset = check_rate_limit(remaining, reset)
 except KeyboardInterrupt:
     pass

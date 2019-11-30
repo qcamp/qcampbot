@@ -29,7 +29,6 @@ class Group:
 
     def add_participant(self, participant):
         self.issue.add_to_assignees(participant.handler)
-        self._issue = None
 
     @property
     def full(self):
@@ -38,12 +37,12 @@ class Group:
     def mark_as_full(self):
         if 'group is full' not in [i.name for i in self.issue.labels]:
             self.issue.add_to_labels('group is full')
-            print_log(f'Label "full" added to the group {self.number}.', icon=u'🏷')
+            print_log(f'Label "full" added to the group {self.number}.', icon='\N{LABEL}')
 
     def mark_as_not_full(self):
         if 'group is full' in [i.name for i in self.issue.labels]:
             self.issue.remove_from_labels('group is full')
-            print_log(f'Label "full" removed to the group {self.number}.', icon=u'🏷')
+            print_log(f'Label "full" removed to the group {self.number}.', icon='\N{LABEL}')
 
     @property
     def closed(self):
@@ -82,11 +81,21 @@ class Group:
         return self._number
 
     def update_full_tag(self):
+        self.update()
         if self.full:
             self.mark_as_full()
         else:
             self.mark_as_not_full()
 
+    def update(self):
+        if self._issue:
+            self._issue.update()
+
+
+group_cache = {issue.number: Group(issue=issue) for issue in repo.get_issues(state='open')}
+
 
 def get_groups(repo):
-    return [Group(issue=issue) for issue in repo.get_issues(state='open')]
+    groups = {issue.number: Group(issue=issue) for issue in repo.get_issues(state='open')}
+    groups.update(group_cache)
+    return groups
