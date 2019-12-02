@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-from .config import repo, team_limit
+from .config import repo, team_limit, exclude_issues
 from .tools import print_log
 
 class Group:
@@ -98,4 +98,6 @@ group_cache = {issue.number: Group(issue=issue) for issue in repo.get_issues(sta
 def get_groups(repo):
     groups = {issue.number: Group(issue=issue) for issue in repo.get_issues(state='open')}
     groups.update(group_cache)
+    for to_exclude in exclude_issues:
+        groups.pop(to_exclude, None)
     return groups

@@ -23,3 +23,4 @@ organization = gh.get_organization(config['org'])
 coaches_team = organization.get_team_by_slug(config['coaches team'])
 user = gh.get_user()
 team_limit = config['team limit']
+exclude_issues = config['exclude issues']
