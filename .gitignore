@@ -1,6 +1,7 @@
-# config file
+# specific files about this repo
 config.yaml
 summary.csv
+handler_fullname.csv
 
 # editor files
 .vscode/

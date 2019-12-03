@@ -13,13 +13,11 @@
 import csv
 from qcampbot import repo, get_groups
 
-
 with open('summary.csv', 'w', newline='') as csvfile:
-    spamwriter = csv.writer(csvfile)
-    spamwriter.writerow(['Title', '#', 'Coach', 'Members'])
+    summary = csv.writer(csvfile)
+    summary.writerow(['Title', '#', 'Coach', 'Members'])
     for group in get_groups(repo).values():
-        spamwriter.writerow([group.title,
-                             group.number,
-                             ', '.join([coach.full_name for coach in group.coaches]),
-                             ', '.join([participant.full_name for participant in
-                                        group.participants])])
+        summary.writerow([group.title,
+                          group.number,
+                          ', '.join([coach.full_name for coach in group.coaches]),
+                          ', '.join([participant.full_name for participant in group.participants])])

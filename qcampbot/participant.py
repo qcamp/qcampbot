@@ -10,8 +10,9 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-from .config import repo, coaches_team
+from .config import repo, gh, coaches_team, user_handlers
 from .group import Group
+from .tools import print_log
 
 
 class Participant:
@@ -38,8 +39,17 @@ class Participant:
         return coaches_team.has_in_members(self._named_user)
 
     @property
+    def named_user(self):
+        if self._named_user is None:
+            self._named_user = gh.get_user(self.handler)
+        return self._named_user
+
+    @property
     def full_name(self):
-        name = self._named_user.name
+        name = user_handlers.get(self.handler)
         if name is None:
-            name = f"({self._named_user.login})"
+            name = self.named_user.name
+        if name is None:
+            print_log(f'The handler {self.handler} does not have a name', icon='\N{CROSS MARK}')
+            name = f"({self.handler})"
         return name

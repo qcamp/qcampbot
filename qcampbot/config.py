@@ -12,6 +12,16 @@
 
 from github import Github
 import yaml
+import csv
+
+user_handlers = {}
+try:
+    with open('handler_fullname.csv') as csvfile:
+        user_handlers = {row[0]: row[1] for row in csv.reader(csvfile)}
+except FileNotFoundError:
+    print('no handler_fullname.csv file')
+except IndexError:
+    print('file handler_fullname.csv out of format')
 
 with open('config.yaml') as file:
     config = yaml.load(file, Loader=yaml.FullLoader)
