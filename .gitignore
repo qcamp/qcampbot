@@ -1,5 +1,6 @@
 # config file
 config.yaml
+summary.csv
 
 # editor files
 .vscode/

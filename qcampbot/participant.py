@@ -36,3 +36,7 @@ class Participant:
     @property
     def is_coach(self):
         return coaches_team.has_in_members(self._named_user)
+
+    @property
+    def full_name(self):
+        return str(self._named_user.name)

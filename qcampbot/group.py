@@ -80,6 +80,10 @@ class Group:
             self._number = self.issue.number
         return self._number
 
+    @property
+    def title(self):
+        return self.issue.title
+
     def update_full_tag(self):
         self.update()
         if self.full:

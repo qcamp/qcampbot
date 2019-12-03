@@ -1,0 +1,12 @@
+# Token for the bot
+token: 4a439...0ec17
+
+org: qiskit-community
+repo: qiskit-camp-asia-19
+
+
+coaches team: coaches
+
+team limit: 5
+exclude issues:
+ - 49
