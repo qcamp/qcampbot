@@ -14,7 +14,8 @@ import time
 from datetime import datetime
 from termcolor import colored
 
-from .config import gh
+from .config import gh, rate_config
+
 
 def highlight(text):
     return colored(text, attrs=['bold'])
@@ -27,12 +28,14 @@ def print_log(to_print, icon=None):
 def check_rate_limit(previous_remaining=None, previous_reset=None):
     core_rate = gh.get_rate_limit().core
     remaining = core_rate.remaining
-    reset = gh.get_rate_limit().core.reset.timestamp() - datetime.utcnow().timestamp()
+    reset = int(gh.get_rate_limit().core.reset.timestamp() - datetime.utcnow().timestamp())
+    rate_limit = rate_config['limit']
+    sleep = rate_config['sleep']
     if previous_remaining is None or previous_reset is None:
         return remaining, reset
     rate = (previous_remaining-remaining)/(previous_reset-reset)
-    if rate > 1.5:
-        print_log(f'Looping too fast ({rate:.2f} req/sec!). Sleep(2)', icon='\N{STOPWATCH}')
-        time.sleep(2)
-    print_log(f'There are {remaining} reqs in the coming {reset:.0f} secs.', '\N{Construction Sign}')
+    if rate > rate_limit:
+        print_log(f'Looping too fast ({rate:.2f} req/sec!). Sleep({sleep})', icon='\N{STOPWATCH}')
+        time.sleep(sleep)
+    print_log(f'There are {remaining} reqs in the coming {reset} secs.', '\N{Construction Sign}')
     return remaining, reset

@@ -24,3 +24,4 @@ coaches_team = organization.get_team_by_slug(config['coaches team'])
 user = gh.get_user()
 team_limit = config['team limit']
 exclude_issues = config['exclude issues']
+rate_config = config['rate']
