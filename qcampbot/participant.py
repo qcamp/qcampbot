@@ -39,4 +39,7 @@ class Participant:
 
     @property
     def full_name(self):
-        return str(self._named_user.name)
+        name = self._named_user.name
+        if name is None:
+            name = f"({self._named_user.login})"
+        return name
