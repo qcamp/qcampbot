@@ -1,12 +1,24 @@
 # Token for the bot
-token: 4a439...0ec17
+token: 4a...c17
 
+# Event information
 org: qiskit-community
 repo: qiskit-camp-asia-19
 
-
+# Team name for the coaches
 coaches team: coaches
-
+# Maximun amount of members in a team (coaches not included)
 team limit: 5
+# Some of the issues might not be teams
 exclude issues:
- - 49
+ - 0
+
+# Path to files
+csv files:
+ summary: summary.csv
+ handlers: handler_fullname.csv
+
+# Rate limit handeling, if the rate is higher than the limit, it will sleep x seconds.
+rate:
+ limit: 1.5
+ sleep: 2
