@@ -11,9 +11,9 @@
 # that they have been altered from the originals.
 
 import csv
-from qcampbot import repo, get_groups
+from qcampbot import repo, get_groups, summary
 
-with open('summary.csv', 'w', newline='') as csvfile:
+with open(summary, 'w', newline='') as csvfile:
     summary = csv.writer(csvfile)
     summary.writerow(['Title', '#', 'Coach', 'Members'])
     for group in get_groups(repo).values():

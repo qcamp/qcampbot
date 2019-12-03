@@ -14,15 +14,6 @@ from github import Github
 import yaml
 import csv
 
-user_handlers = {}
-try:
-    with open('handler_fullname.csv') as csvfile:
-        user_handlers = {row[0]: row[1] for row in csv.reader(csvfile)}
-except FileNotFoundError:
-    print('no handler_fullname.csv file')
-except IndexError:
-    print('file handler_fullname.csv out of format')
-
 with open('config.yaml') as file:
     config = yaml.load(file, Loader=yaml.FullLoader)
 
@@ -35,3 +26,14 @@ user = gh.get_user()
 team_limit = config['team limit']
 exclude_issues = config['exclude issues']
 rate_config = config['rate']
+summary = config['csv files']['summary']
+handlers = config['csv files']['handlers']
+
+user_handlers = {}
+try:
+    with open(handlers) as csvfile:
+        user_handlers = {row[0]: row[1] for row in csv.reader(csvfile)}
+except FileNotFoundError:
+    print(f'no {handlers} file')
+except IndexError:
+    print(f'file {handlers} out of format')
