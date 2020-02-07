@@ -13,6 +13,7 @@
 import time
 from datetime import datetime
 from termcolor import colored
+from github.GithubException import GithubException
 
 from .config import gh, rate_config
 
@@ -26,13 +27,24 @@ def print_log(to_print, icon=None):
 
 
 def check_rate_limit(previous_remaining=None, previous_reset=None):
-    core_rate = gh.get_rate_limit().core
-    remaining = core_rate.remaining
-    reset = int(gh.get_rate_limit().core.reset.timestamp() - datetime.utcnow().timestamp())
+    try:
+        core_rate = gh.get_rate_limit().core
+        remaining = core_rate.remaining
+        reset = int(core_rate.reset.timestamp() - datetime.utcnow().timestamp())
+    except GithubException:
+        remaining = 0
+        reset = 0
     rate_limit = rate_config['limit']
     sleep = rate_config['sleep']
+
     if previous_remaining is None or previous_reset is None:
         return remaining, reset
+
+    if previous_reset-reset == 0:
+        print_log(f'Rate limit not supported. Sleep({sleep})', '\N{Construction Sign}')
+        time.sleep(sleep)
+        return remaining, reset
+
     rate = (previous_remaining-remaining)/(previous_reset-reset)
     if rate > rate_limit:
         print_log(f'Looping too fast ({rate:.2f} req/sec!). Sleep({sleep})', icon='\N{STOPWATCH}')

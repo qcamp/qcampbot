@@ -13,4 +13,5 @@
 from .config import repo, summary
 from .join_request import get_join_requests
 from .group import get_groups
+from .participant import get_participants
 from .tools import check_rate_limit
