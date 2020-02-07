@@ -13,6 +13,7 @@
 from .config import repo, team_limit, exclude_issues
 from .tools import print_log
 
+
 class Group:
     def __init__(self, issue=None, number=None):
         self._number = None
@@ -34,15 +35,21 @@ class Group:
     def full(self):
         return len(self.participants) >= team_limit
 
+    def mark_as(self, label, message):
+        if label not in [i.name for i in self.issue.labels]:
+            self.issue.add_to_labels(label)
+            print_log(message, icon='\N{LABEL}')
+
+    def mark_as_not(self, label, message):
+        if label in [i.name for i in self.issue.labels]:
+            self.issue.remove_from_labels(label)
+            print_log(message, icon='\N{LABEL}')
+
     def mark_as_full(self):
-        if 'group is full' not in [i.name for i in self.issue.labels]:
-            self.issue.add_to_labels('group is full')
-            print_log(f'Label "full" added to the group {self.number}.', icon='\N{LABEL}')
+        self.mark_as('group is full', f'Label "full" added to the group {self.number}.')
 
     def mark_as_not_full(self):
-        if 'group is full' in [i.name for i in self.issue.labels]:
-            self.issue.remove_from_labels('group is full')
-            print_log(f'Label "full" removed to the group {self.number}.', icon='\N{LABEL}')
+        self.mark_as_not('group is full', f'Label "full" removed to the group {self.number}.')
 
     @property
     def closed(self):
@@ -91,9 +98,23 @@ class Group:
         else:
             self.mark_as_not_full()
 
+    def update_toomany_tag(self):
+        if len(self.participants) > team_limit:
+            self.mark_as_toomany()
+        else:
+            self.mark_as_not_toomany()
+
     def update(self):
         if self._issue:
             self._issue.update()
+
+    def mark_as_toomany(self):
+        self.mark_as('too many members!',
+                     f'Label "too many members" added to the group {self.number}.')
+
+    def mark_as_not_toomany(self):
+        self.mark_as_not('too many members!',
+                         f'Label "too many members" removed to the group {self.number}.')
 
 
 group_cache = {issue.number: Group(issue=issue) for issue in repo.get_issues(state='open')}

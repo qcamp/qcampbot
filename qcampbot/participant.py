@@ -36,6 +36,8 @@ class Participant:
 
     @property
     def is_coach(self):
+        if coaches_team is None:
+            return False
         return coaches_team.has_in_members(self._named_user)
 
     @property

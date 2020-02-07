@@ -18,6 +18,17 @@ python team_formation.py
 
 It performs two operations in a loop until `ctrl-C`: tags the team that are full as `group is full` (and removes the tag if, for some reason, members are removed) and assign members to a team when a participant mentions `@qcamp`.
 
+## Internal hackathons
+When the hackathon is internal, participants assign themselves to groups, so they need monitoring. For that, the script `team_formation_internal.py` should be running during team formation.
+
+```
+python team_formation_internal.py
+```
+
+This script does not monitor `@qcamp` (this user does not exist internally) but does the same team tagging as `team_formation.py`. Additional, checks that members are in a single team.
+
+Internal hackathons do not have the notion of coaches.
+
 # Generate a summary table
 
 The following command will generate a *csv* file with the summary of the participant groups.

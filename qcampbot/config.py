@@ -17,11 +17,19 @@ import csv
 with open('config.yaml') as file:
     config = yaml.load(file, Loader=yaml.FullLoader)
 
-gh = Github(config['token'])
+if config.get('base_url', None):
+    gh = Github(config['token'], base_url=config['base_url'])
+else:
+    gh = Github(config['token'])
 
 repo = gh.get_repo("%s/%s" % (config['org'], config['repo']))
 organization = gh.get_organization(config['org'])
-coaches_team = organization.get_team_by_slug(config['coaches team'])
+
+if config.get('base_url', None):
+    coaches_team = None
+else:
+    coaches_team = organization.get_team_by_slug(config['coaches team'])
+
 user = gh.get_user()
 team_limit = config['team limit']
 exclude_issues = config['exclude issues']
