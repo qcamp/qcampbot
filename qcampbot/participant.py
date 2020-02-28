@@ -30,7 +30,7 @@ class Participant:
     @property
     def groups(self):
         if self._groups is None:
-            self._groups = [Group(issue=issue) for issue in repo.get_issues(state='open',
+            self._groups = [Group(issue=issue)for issue in repo.get_issues(state='open',
                                                                             assignee=self.handler)]
         return self._groups
 

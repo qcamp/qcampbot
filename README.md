@@ -48,3 +48,12 @@ The file `handler_fullname.csv` allows to relate a GitHub handler with a partici
 ```
 
 If the file is not present (or the participant is not in the file), the script will try to get the full name from the GitHub profile.
+
+# Checklist to deploy a hackathon repo
+
+ - Create a repo from the template: https://github.com/qiskit-community/qiskit-camp-template -> `Use this template`.
+ - Edit the `description` and the `website`.
+ - In settings add `qbotcamp` as Admin and `qiskit-community/Coaches` with Triage privileges.
+ - In settings, remove `wiki` and `projects`.
+ - Set issue labels as in template.
+ - Edit README file where ⚠️.
